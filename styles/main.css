@@ -976,7 +976,7 @@ td {
 }
 
       .post-detail .post .post-content p {
-        font-size: 12px;
+        font-size: 14px;
       }
     
       .post-container .post .post-title {
@@ -993,6 +993,22 @@ td {
       }
     
       body {
-        font-family: -apple-system,BlinkMacSystemFont,'Helvetica Neue','PingFang SC','Hiragino Sans GB','Droid Sans Fallback','Microsoft YaHei',sans-serif;
+        font-family: Georgia, serif;
+      }
+    
+      .main {
+        background: #eef1f3;
+      }
+    
+      body {
+        background: #eef1f3;
+      }
+    
+      body {
+        color: #7e7f88;
+      }
+    
+      a:hover {
+        color: #79d8cd;
       }
     
