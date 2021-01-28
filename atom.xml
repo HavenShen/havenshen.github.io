@@ -1,21 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://havenshen.github.io</id>
-    <title>Gridea</title>
-    <updated>2021-01-28T06:23:06.101Z</updated>
+    <title>Haven Shen</title>
+    <updated>2021-01-28T06:37:02.622Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://havenshen.github.io"/>
     <link rel="self" href="https://havenshen.github.io/atom.xml"/>
-    <subtitle>温故而知新</subtitle>
+    <subtitle>Code Artisan.</subtitle>
     <logo>https://havenshen.github.io/images/avatar.png</logo>
     <icon>https://havenshen.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2021, Gridea</rights>
+    <rights>All rights reserved 2021, Haven Shen</rights>
+    <entry>
+        <title type="html"><![CDATA[从这里开始使用 Slim 3 视图篇]]></title>
+        <id>https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-shi-tu-pian/</id>
+        <link href="https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-shi-tu-pian/">
+        </link>
+        <updated>2016-06-29T06:34:22.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>延续 <a href="http://havenshen.com/articles/2016/06/getting-started-slim-3.html">从这里开始使用 Slim 3 入门篇</a> 项目结构,请了解。</p>
+</blockquote>
+<h2 id="安装视图组件">安装视图组件</h2>
+<p>在 site 项目根目录运行</p>
+<pre><code>composer require slim/twig-view
+</code></pre>
+<h2 id="设置容器">设置容器</h2>
+<p>修改 site/app/bootstrap.php 文件</p>
+<pre><code class="language-php">// ...
+
+// 修改 $app = new \Slim\App;
+$container = new \Slim\Container;
+$container['view'] = function ($c) {
+	$view = new \Slim\Views\Twig('../resources/views');
+	
+	$view-&gt;addExtension(new \Slim\Views\TwigExtension(
+		$c['router'],
+		$c['request']-&gt;getUri(),
+	));
+	
+	return $view;
+};
+$app = new \Slim\App($container);
+
+// ...
+</code></pre>
+<h2 id="渲染视图">渲染视图</h2>
+<p>创建 site/resources/views/home.twig 文件</p>
+<pre><code class="language-php">This is the home view.
+</code></pre>
+<p>修改 site/app/routes.php 文件</p>
+<pre><code class="language-php">// ...
+
+/* 修改
+* $app-&gt;get('/', function ($request, $response, $args) {
+*   echo 'Home';
+* });
+*/
+$app-&gt;get('/', function ($request, $response, $args) {
+	return $this-&gt;view-&gt;render($response, 'home.twig');
+});
+
+// ...
+</code></pre>
+<blockquote>
+<p>运行下网站看效果 ...</p>
+</blockquote>
+<h2 id="数据传送至视图">数据传送至视图</h2>
+<p>修改 site/app/routes.php 文件</p>
+<pre><code class="language-php">// ...
+
+/* 修改
+* $app-&gt;get('/', function ($request, $response, $args) {
+* 	return $this-&gt;view-&gt;render($response, 'home.twig');
+* });
+*/ 
+$app-&gt;get('/', function ($request, $response, $args) {
+	$name = 'Haven';
+	
+	return $this-&gt;view-&gt;render($response, 'home.twig', [
+		'name' =&gt; $name,
+	]);
+});
+
+// ...
+</code></pre>
+<p>修改 site/resources/views/home.twig 文件</p>
+<pre><code class="language-php">// 修改 This is the home view.
+Hello {{ name }}
+</code></pre>
+<blockquote>
+<p>运行下网站看效果 ...</p>
+</blockquote>
+<p>路由参数传递</p>
+<p>修改 site/app/routes.php 文件</p>
+<pre><code class="language-php">// ...
+
+//增加
+$app-&gt;get('/profile/{username}', function ($request, $response, $args) {
+	
+	return $this-&gt;view-&gt;render($response, 'home.twig', [
+		'name' =&gt; $args['username'],
+	]);
+});
+
+// ...
+</code></pre>
+<blockquote>
+<p>运行下网站看效果 ...</p>
+</blockquote>
+<h2 id="path_for-函数使用">path_for 函数使用</h2>
+<p>修改 site/app/routes.php 文件</p>
+<pre><code class="language-php">// ...
+
+/* 修改
+* $app-&gt;get('/profile/{username}', function ($request, $response, $args) {
+* 
+* 	return $this-&gt;view-&gt;render($response, 'home.twig', [
+* 		'name' =&gt; $args['username'],
+* 	]);
+* });
+*/
+$app-&gt;get('/profile/{username}', function ($request, $response, $args) {
+	echo $args['username'];
+})-&gt;setName('user.profile');
+
+// ...
+</code></pre>
+<p>修改 site/resources/views/home.twig 文件</p>
+<pre><code class="language-php">// 修改 Hello {{ name }}
+&lt;a href=&quot;\{\{ path_for('user.profile', {'username': 'Haven'}) }}&quot;&gt;Haven's user profile&lt;/a&gt;
+</code></pre>
+<blockquote>
+<p>运行下网站看效果 ...</p>
+</blockquote>
+<p>你也可以使用 Router 路径来实现，但推荐使用 path_for 函数，如果你改了 Router 路径 setName()  这个别名是不变的，所以不会引起你因业务修改 Router 路径造成你更改大量的的静态页面路径，可维护性更高。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[从这里开始使用 Slim 3 入门篇]]></title>
         <id>https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-ru-men-pian/</id>
         <link href="https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-ru-men-pian/">
         </link>
-        <updated>2021-01-28T06:20:50.000Z</updated>
+        <updated>2016-06-29T06:20:50.000Z</updated>
         <content type="html"><![CDATA[<blockquote>
 <p>Slim 3 是一个不错的轻框架，如果你刚开始接触 Slim 3，那就从这里开始吧。</p>
 </blockquote>

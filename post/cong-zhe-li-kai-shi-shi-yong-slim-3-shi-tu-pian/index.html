@@ -1,0 +1,300 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>从这里开始使用 Slim 3 视图篇 | Haven Shen</title>
+<link rel="shortcut icon" href="https://havenshen.github.io/favicon.ico?v=1611815772535">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://havenshen.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="从这里开始使用 Slim 3 视图篇 | Haven Shen - Atom Feed" href="https://havenshen.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+延续 从这里开始使用 Slim 3 入门篇 项目结构,请了解。
+
+安装视图组件
+在 site 项目根目录运行
+composer require slim/twig-view
+
+设置容器
+修改 site/app/bootstrap.php ..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://havenshen.github.io">
+  <img class="avatar" src="https://havenshen.github.io/images/avatar.png?v=1611815772535" alt="">
+  </a>
+  <h1 class="site-title">
+    Haven Shen
+  </h1>
+  <p class="site-description">
+    Code Artisan.
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              从这里开始使用 Slim 3 视图篇
+            </h2>
+            <div class="post-info">
+              <span>
+                2016-06-29
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <blockquote>
+<p>延续 <a href="http://havenshen.com/articles/2016/06/getting-started-slim-3.html">从这里开始使用 Slim 3 入门篇</a> 项目结构,请了解。</p>
+</blockquote>
+<h2 id="安装视图组件">安装视图组件</h2>
+<p>在 site 项目根目录运行</p>
+<pre><code>composer require slim/twig-view
+</code></pre>
+<h2 id="设置容器">设置容器</h2>
+<p>修改 site/app/bootstrap.php 文件</p>
+<pre><code class="language-php">// ...
+
+// 修改 $app = new \Slim\App;
+$container = new \Slim\Container;
+$container['view'] = function ($c) {
+	$view = new \Slim\Views\Twig('../resources/views');
+	
+	$view-&gt;addExtension(new \Slim\Views\TwigExtension(
+		$c['router'],
+		$c['request']-&gt;getUri(),
+	));
+	
+	return $view;
+};
+$app = new \Slim\App($container);
+
+// ...
+</code></pre>
+<h2 id="渲染视图">渲染视图</h2>
+<p>创建 site/resources/views/home.twig 文件</p>
+<pre><code class="language-php">This is the home view.
+</code></pre>
+<p>修改 site/app/routes.php 文件</p>
+<pre><code class="language-php">// ...
+
+/* 修改
+* $app-&gt;get('/', function ($request, $response, $args) {
+*   echo 'Home';
+* });
+*/
+$app-&gt;get('/', function ($request, $response, $args) {
+	return $this-&gt;view-&gt;render($response, 'home.twig');
+});
+
+// ...
+</code></pre>
+<blockquote>
+<p>运行下网站看效果 ...</p>
+</blockquote>
+<h2 id="数据传送至视图">数据传送至视图</h2>
+<p>修改 site/app/routes.php 文件</p>
+<pre><code class="language-php">// ...
+
+/* 修改
+* $app-&gt;get('/', function ($request, $response, $args) {
+* 	return $this-&gt;view-&gt;render($response, 'home.twig');
+* });
+*/ 
+$app-&gt;get('/', function ($request, $response, $args) {
+	$name = 'Haven';
+	
+	return $this-&gt;view-&gt;render($response, 'home.twig', [
+		'name' =&gt; $name,
+	]);
+});
+
+// ...
+</code></pre>
+<p>修改 site/resources/views/home.twig 文件</p>
+<pre><code class="language-php">// 修改 This is the home view.
+Hello {{ name }}
+</code></pre>
+<blockquote>
+<p>运行下网站看效果 ...</p>
+</blockquote>
+<p>路由参数传递</p>
+<p>修改 site/app/routes.php 文件</p>
+<pre><code class="language-php">// ...
+
+//增加
+$app-&gt;get('/profile/{username}', function ($request, $response, $args) {
+	
+	return $this-&gt;view-&gt;render($response, 'home.twig', [
+		'name' =&gt; $args['username'],
+	]);
+});
+
+// ...
+</code></pre>
+<blockquote>
+<p>运行下网站看效果 ...</p>
+</blockquote>
+<h2 id="path_for-函数使用">path_for 函数使用</h2>
+<p>修改 site/app/routes.php 文件</p>
+<pre><code class="language-php">// ...
+
+/* 修改
+* $app-&gt;get('/profile/{username}', function ($request, $response, $args) {
+* 
+* 	return $this-&gt;view-&gt;render($response, 'home.twig', [
+* 		'name' =&gt; $args['username'],
+* 	]);
+* });
+*/
+$app-&gt;get('/profile/{username}', function ($request, $response, $args) {
+	echo $args['username'];
+})-&gt;setName('user.profile');
+
+// ...
+</code></pre>
+<p>修改 site/resources/views/home.twig 文件</p>
+<pre><code class="language-php">// 修改 Hello {{ name }}
+&lt;a href=&quot;\{\{ path_for('user.profile', {'username': 'Haven'}) }}&quot;&gt;Haven's user profile&lt;/a&gt;
+</code></pre>
+<blockquote>
+<p>运行下网站看效果 ...</p>
+</blockquote>
+<p>你也可以使用 Router 路径来实现，但推荐使用 path_for 函数，如果你改了 Router 路径 setName()  这个别名是不变的，所以不会引起你因业务修改 Router 路径造成你更改大量的的静态页面路径，可维护性更高。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%AE%89%E8%A3%85%E8%A7%86%E5%9B%BE%E7%BB%84%E4%BB%B6">安装视图组件</a></li>
+<li><a href="#%E8%AE%BE%E7%BD%AE%E5%AE%B9%E5%99%A8">设置容器</a></li>
+<li><a href="#%E6%B8%B2%E6%9F%93%E8%A7%86%E5%9B%BE">渲染视图</a></li>
+<li><a href="#%E6%95%B0%E6%8D%AE%E4%BC%A0%E9%80%81%E8%87%B3%E8%A7%86%E5%9B%BE">数据传送至视图</a></li>
+<li><a href="#path_for-%E5%87%BD%E6%95%B0%E4%BD%BF%E7%94%A8">path_for 函数使用</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-ru-men-pian/">
+              <h3 class="post-title">
+                从这里开始使用 Slim 3 入门篇
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/havenshen/havenshen.github.io" target="_blank">HavenShen Page</a>
+  <a class="rss" href="https://havenshen.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
