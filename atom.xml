@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://havenshen.github.io</id>
+    <id>https://havenshen.com</id>
     <title>Haven Shen</title>
-    <updated>2021-01-28T07:10:29.955Z</updated>
+    <updated>2021-01-29T01:17:06.914Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://havenshen.github.io"/>
-    <link rel="self" href="https://havenshen.github.io/atom.xml"/>
+    <link rel="alternate" href="https://havenshen.com"/>
+    <link rel="self" href="https://havenshen.com/atom.xml"/>
     <subtitle>Code Artisan.</subtitle>
-    <logo>https://havenshen.github.io/images/avatar.png</logo>
-    <icon>https://havenshen.github.io/favicon.ico</icon>
+    <logo>https://havenshen.com/images/avatar.png</logo>
+    <icon>https://havenshen.com/favicon.ico</icon>
     <rights>All rights reserved 2021, Haven Shen</rights>
     <entry>
         <title type="html"><![CDATA[从这里开始使用 Slim 3 视图篇]]></title>
-        <id>https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-shi-tu-pian/</id>
-        <link href="https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-shi-tu-pian/">
+        <id>https://havenshen.com/post/cong-zhe-li-kai-shi-shi-yong-slim-3-shi-tu-pian/</id>
+        <link href="https://havenshen.com/post/cong-zhe-li-kai-shi-shi-yong-slim-3-shi-tu-pian/">
         </link>
         <updated>2016-06-29T06:34:22.000Z</updated>
         <content type="html"><![CDATA[<blockquote>
@@ -137,8 +137,8 @@ $app-&gt;get('/profile/{username}', function ($request, $response, $args) {
     </entry>
     <entry>
         <title type="html"><![CDATA[从这里开始使用 Slim 3 入门篇]]></title>
-        <id>https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-ru-men-pian/</id>
-        <link href="https://havenshen.github.io/post/cong-zhe-li-kai-shi-shi-yong-slim-3-ru-men-pian/">
+        <id>https://havenshen.com/post/cong-zhe-li-kai-shi-shi-yong-slim-3-ru-men-pian/</id>
+        <link href="https://havenshen.com/post/cong-zhe-li-kai-shi-shi-yong-slim-3-ru-men-pian/">
         </link>
         <updated>2016-06-29T06:20:50.000Z</updated>
         <content type="html"><![CDATA[<blockquote>
