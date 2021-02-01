@@ -1,0 +1,285 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PHP 引用变量 | Haven Shen</title>
+<link rel="shortcut icon" href="https://havenshen.com/favicon.ico?v=1612165034142">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://havenshen.com/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="PHP 引用变量 | Haven Shen - Atom Feed" href="https://havenshen.com/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="PHP 引用变量的概念和定义方式
+概念
+在 PHP 中引用意味着用不同的名字访问同一个变量内容即同一个内存地址。
+定义方式
+使用 &amp; 符号
+引用变量的工作原理及涉及知识点
+未使用引用
+&lt;?php
+
+$arr = range(0..." />
+    <meta name="keywords" content="PHP" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://havenshen.com">
+  <img class="avatar" src="https://havenshen.com/images/avatar.png?v=1612165034142" alt="">
+  </a>
+  <h1 class="site-title">
+    Haven Shen
+  </h1>
+  <p class="site-description">
+    Code Artisan.
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/HavenShen" target="_blank">
+          <i class="ri-github-line"></i>
+        </a>
+      
+    
+      
+        <a href="https://twitter.com/havenshen" target="_blank">
+          <i class="ri-twitter-line"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              PHP 引用变量
+            </h2>
+            <div class="post-info">
+              <span>
+                2016-07-08
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+                <a href="https://havenshen.com/tag/uXW0Hrars/" class="post-tag">
+                  # PHP
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h2 id="php-引用变量的概念和定义方式">PHP 引用变量的概念和定义方式</h2>
+<h3 id="概念">概念</h3>
+<p>在 PHP 中引用意味着用不同的名字访问同一个变量内容即同一个内存地址。</p>
+<h3 id="定义方式">定义方式</h3>
+<p>使用 <code>&amp;</code> 符号</p>
+<h2 id="引用变量的工作原理及涉及知识点">引用变量的工作原理及涉及知识点</h2>
+<h3 id="未使用引用">未使用引用</h3>
+<pre><code class="language-php">&lt;?php
+
+$arr = range(0, 1000);  // $arr 变量引用 Zend 分配的一块内存地址 0x0001 
+var_dump(memory_get_usage());   // int(392008)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=1, is_ref=0)= ... 有 1 个引用（$arr）$arr 引用内存地址 0x0001 未使用引用
+
+$tempArr = $arr;    // $tempArr 变量引用内存地址 0x0001
+var_dump(memory_get_usage());   // int(392040)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=2, is_ref=0)= ... 有 2 个引用（$arr、$tempArr）$arr 引用内存地址 0x0001 未使用引用
+
+$arr = range(1, 100);   // 触发 COW 机制 $arr 变量引用 Zend 分配的一块新内存地址 0x0002
+var_dump(memory_get_usage());   // int(428960)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=1, is_ref=0)= ... 有 1 个引用（$arr）$arr 引用内存地址 0x0002 未使用引用
+</code></pre>
+<h3 id="使用引用">使用引用</h3>
+<pre><code class="language-php">&lt;?php
+
+$arr = range(0, 1000);  // $arr 变量引用 Zend 分配的一块内存地址 0x0001 
+var_dump(memory_get_usage());   // int(392008)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=1, is_ref=0)= ... 有 1 个引用（$arr）$arr 引用内存地址 0x0001 使用引用
+
+$tempArr = &amp;$arr;    // $tempArr 使用引用，变量引用内存地址 0x0001
+var_dump(memory_get_usage());   // int(392064)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=2, is_ref=1)= ... 有 2 个引用（$arr、$tempArr）$arr 引用内存地址 0x0001 使用引用
+
+$arr = range(1, 100);   // 因为使用了引用，不触发 COW 机制 $arr 变量仍然引用内存地址 0x0001
+var_dump(memory_get_usage());   // int(392064)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=2, is_ref=1)= ... 有 2 个引用（$arr、$tempArr）$arr 引用内存地址 0x0001 使用引用
+</code></pre>
+<h4 id="cow-copy-on-write-机制">COW (Copy On Write) 机制</h4>
+<p>在一个变量被赋值后，不改变变量值，不会开辟新的内存空间 (跟使用引用一样)，当一个变量值被改变后，Zend 内核会重新分配新的内存空间指向变量。</p>
+<h4 id="zval-结构体">zval 结构体</h4>
+<p>是一个变量容器。查看 zval 结构体使用 xdebug_debug_zval() 需要安装 xdebug 扩展。结构体中 <code>refcount</code> 代表内存空间中指向变量的个数。<code>is_ref</code> 表示是不是使用引用。</p>
+<h3 id="取消引用">取消引用</h3>
+<pre><code class="language-php">&lt;?php
+
+$num = 1;   // $num 变量指向 Zend 分配的一块内存地址 0x0001 
+
+$tempNum = &amp;$num;   // $tempNum 使用引用，变量引用内存地址 0x0001
+
+unset($tempNum);    // unset 销毁 $tempNum 会取消该变量对内存地址 0x0001 的引用，但内存地址还存在
+
+echo $num . &quot;\n&quot;;   // 输出 1
+</code></pre>
+<h4 id="unset">unset</h4>
+<p>unset 只会取消对变量的引用，不会销毁内存地址。</p>
+<h3 id="类对象">类对象</h3>
+<pre><code class="language-php">&lt;?php
+
+class Person
+{
+	public $name = 'Haven Shen';
+}
+
+$personOne = new Person;
+xdebug_debug_zval('personOne');	// 查看 $personOne zval 结构体输出：personOne: (refcount=1, is_ref=0)= ... 有 1 个引用（$personOne）$personOne 引用内存地址 0x0001 未使用引用
+
+$personTwo = $personTwo;
+xdebug_debug_zval('personOne');	// 查看 $personOne zval 结构体输出：personOne: (refcount=2, is_ref=0)= ... 有 2 个引用（$personOne、$personTwo）$personOne 引用内存地址 0x0001 未使用引用
+
+$personTwo-&gt;name = 'Kiue Shen';
+xdebug_debug_zval('personOne');	// 查看 $personOne zval 结构体输出：personOne: (refcount=2, is_ref=0)= ... 有 2 个引用（$personOne、$personTwo）$personOne 引用内存地址 0x0001 未使用引用
+</code></pre>
+<p>类对象本身就是引用传递，不会触发 COW 机制，如果需要复制，可以调用 <code>__clone()</code> 魔术方法。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#php-%E5%BC%95%E7%94%A8%E5%8F%98%E9%87%8F%E7%9A%84%E6%A6%82%E5%BF%B5%E5%92%8C%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BC%8F">PHP 引用变量的概念和定义方式</a>
+<ul>
+<li><a href="#%E6%A6%82%E5%BF%B5">概念</a></li>
+<li><a href="#%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BC%8F">定义方式</a></li>
+</ul>
+</li>
+<li><a href="#%E5%BC%95%E7%94%A8%E5%8F%98%E9%87%8F%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E6%B6%89%E5%8F%8A%E7%9F%A5%E8%AF%86%E7%82%B9">引用变量的工作原理及涉及知识点</a>
+<ul>
+<li><a href="#%E6%9C%AA%E4%BD%BF%E7%94%A8%E5%BC%95%E7%94%A8">未使用引用</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8%E5%BC%95%E7%94%A8">使用引用</a>
+<ul>
+<li><a href="#cow-copy-on-write-%E6%9C%BA%E5%88%B6">COW (Copy On Write) 机制</a></li>
+<li><a href="#zval-%E7%BB%93%E6%9E%84%E4%BD%93">zval 结构体</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%96%E6%B6%88%E5%BC%95%E7%94%A8">取消引用</a>
+<ul>
+<li><a href="#unset">unset</a></li>
+</ul>
+</li>
+<li><a href="#%E7%B1%BB%E5%AF%B9%E8%B1%A1">类对象</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://havenshen.com/post/cong-zhe-li-kai-shi-shi-yong-slim-3-shi-tu-pian/">
+              <h3 class="post-title">
+                从这里开始使用 Slim 3 视图篇
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/havenshen/havenshen.github.io" target="_blank">HavenShen Page</a>
+  <a class="rss" href="https://havenshen.com/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

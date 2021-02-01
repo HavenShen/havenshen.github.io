@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://havenshen.com</id>
     <title>Haven Shen</title>
-    <updated>2021-01-29T01:31:28.401Z</updated>
+    <updated>2021-02-01T07:37:32.695Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://havenshen.com"/>
     <link rel="self" href="https://havenshen.com/atom.xml"/>
@@ -10,6 +10,85 @@
     <logo>https://havenshen.com/images/avatar.png</logo>
     <icon>https://havenshen.com/favicon.ico</icon>
     <rights>All rights reserved 2021, Haven Shen</rights>
+    <entry>
+        <title type="html"><![CDATA[PHP 引用变量]]></title>
+        <id>https://havenshen.com/post/php-yin-yong-bian-liang/</id>
+        <link href="https://havenshen.com/post/php-yin-yong-bian-liang/">
+        </link>
+        <updated>2016-07-08T07:34:44.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="php-引用变量的概念和定义方式">PHP 引用变量的概念和定义方式</h2>
+<h3 id="概念">概念</h3>
+<p>在 PHP 中引用意味着用不同的名字访问同一个变量内容即同一个内存地址。</p>
+<h3 id="定义方式">定义方式</h3>
+<p>使用 <code>&amp;</code> 符号</p>
+<h2 id="引用变量的工作原理及涉及知识点">引用变量的工作原理及涉及知识点</h2>
+<h3 id="未使用引用">未使用引用</h3>
+<pre><code class="language-php">&lt;?php
+
+$arr = range(0, 1000);  // $arr 变量引用 Zend 分配的一块内存地址 0x0001 
+var_dump(memory_get_usage());   // int(392008)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=1, is_ref=0)= ... 有 1 个引用（$arr）$arr 引用内存地址 0x0001 未使用引用
+
+$tempArr = $arr;    // $tempArr 变量引用内存地址 0x0001
+var_dump(memory_get_usage());   // int(392040)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=2, is_ref=0)= ... 有 2 个引用（$arr、$tempArr）$arr 引用内存地址 0x0001 未使用引用
+
+$arr = range(1, 100);   // 触发 COW 机制 $arr 变量引用 Zend 分配的一块新内存地址 0x0002
+var_dump(memory_get_usage());   // int(428960)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=1, is_ref=0)= ... 有 1 个引用（$arr）$arr 引用内存地址 0x0002 未使用引用
+</code></pre>
+<h3 id="使用引用">使用引用</h3>
+<pre><code class="language-php">&lt;?php
+
+$arr = range(0, 1000);  // $arr 变量引用 Zend 分配的一块内存地址 0x0001 
+var_dump(memory_get_usage());   // int(392008)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=1, is_ref=0)= ... 有 1 个引用（$arr）$arr 引用内存地址 0x0001 使用引用
+
+$tempArr = &amp;$arr;    // $tempArr 使用引用，变量引用内存地址 0x0001
+var_dump(memory_get_usage());   // int(392064)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=2, is_ref=1)= ... 有 2 个引用（$arr、$tempArr）$arr 引用内存地址 0x0001 使用引用
+
+$arr = range(1, 100);   // 因为使用了引用，不触发 COW 机制 $arr 变量仍然引用内存地址 0x0001
+var_dump(memory_get_usage());   // int(392064)
+xdebug_debug_zval('arr');   // 查看 $arr zval 结构体输出：arr: (refcount=2, is_ref=1)= ... 有 2 个引用（$arr、$tempArr）$arr 引用内存地址 0x0001 使用引用
+</code></pre>
+<h4 id="cow-copy-on-write-机制">COW (Copy On Write) 机制</h4>
+<p>在一个变量被赋值后，不改变变量值，不会开辟新的内存空间 (跟使用引用一样)，当一个变量值被改变后，Zend 内核会重新分配新的内存空间指向变量。</p>
+<h4 id="zval-结构体">zval 结构体</h4>
+<p>是一个变量容器。查看 zval 结构体使用 xdebug_debug_zval() 需要安装 xdebug 扩展。结构体中 <code>refcount</code> 代表内存空间中指向变量的个数。<code>is_ref</code> 表示是不是使用引用。</p>
+<h3 id="取消引用">取消引用</h3>
+<pre><code class="language-php">&lt;?php
+
+$num = 1;   // $num 变量指向 Zend 分配的一块内存地址 0x0001 
+
+$tempNum = &amp;$num;   // $tempNum 使用引用，变量引用内存地址 0x0001
+
+unset($tempNum);    // unset 销毁 $tempNum 会取消该变量对内存地址 0x0001 的引用，但内存地址还存在
+
+echo $num . &quot;\n&quot;;   // 输出 1
+</code></pre>
+<h4 id="unset">unset</h4>
+<p>unset 只会取消对变量的引用，不会销毁内存地址。</p>
+<h3 id="类对象">类对象</h3>
+<pre><code class="language-php">&lt;?php
+
+class Person
+{
+	public $name = 'Haven Shen';
+}
+
+$personOne = new Person;
+xdebug_debug_zval('personOne');	// 查看 $personOne zval 结构体输出：personOne: (refcount=1, is_ref=0)= ... 有 1 个引用（$personOne）$personOne 引用内存地址 0x0001 未使用引用
+
+$personTwo = $personTwo;
+xdebug_debug_zval('personOne');	// 查看 $personOne zval 结构体输出：personOne: (refcount=2, is_ref=0)= ... 有 2 个引用（$personOne、$personTwo）$personOne 引用内存地址 0x0001 未使用引用
+
+$personTwo-&gt;name = 'Kiue Shen';
+xdebug_debug_zval('personOne');	// 查看 $personOne zval 结构体输出：personOne: (refcount=2, is_ref=0)= ... 有 2 个引用（$personOne、$personTwo）$personOne 引用内存地址 0x0001 未使用引用
+</code></pre>
+<p>类对象本身就是引用传递，不会触发 COW 机制，如果需要复制，可以调用 <code>__clone()</code> 魔术方法。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[从这里开始使用 Slim 3 视图篇]]></title>
         <id>https://havenshen.com/post/cong-zhe-li-kai-shi-shi-yong-slim-3-shi-tu-pian/</id>
